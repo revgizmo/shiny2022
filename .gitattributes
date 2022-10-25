@@ -1,3 +1,4 @@
+Data/iowa_2022.csv filter=lfs diff=lfs merge=lfs -text
 /07_Shiny_Package.html filter=lfs diff=lfs merge=lfs -text
 /Data/iowa_2022.csv filter=lfs diff=lfs merge=lfs -text
 /all-apps/www/data/iowa_2020.RDS filter=lfs diff=lfs merge=lfs -text
@@ -20,3 +21,4 @@
 /rmd/04_Outputs_and_Other_Topics.html filter=lfs diff=lfs merge=lfs -text
 /rmd/05_Reactivity.html filter=lfs diff=lfs merge=lfs -text
 /rmd/06_Data_and_Robustness.html filter=lfs diff=lfs merge=lfs -text
+/Data/iowa_2022.csv.zip filter=lfs diff=lfs merge=lfs -text
