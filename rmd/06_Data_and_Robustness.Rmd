@@ -1,0 +1,220 @@
+---
+title: "06_Data_Stragies"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Data Strategies and Best Practices
+
+As a final comment about Shiny apps, let's talk about some best practices and data strategies.
+
+You are using Shiny because you want to work with data.
+
+How large is that data? How long does it take to compute on?
+
+# User Experience
+
+We've talked some about user interface. We should also mention **user experience.**
+
+We are all familiar with using software. We use it everyday, and we browse the web and use various sites to conduct daily tasks.
+
+In other words, we all have (unvoiced) expectations about how an app *should* function-- how quickly it should yield a result, and how easy it should be to use.
+
+If a Shiny app is slow or difficult, people won't use it. If it is extremely slow, users may think it's not functioning.
+
+-   **Tell your users** what is happening. Use messages, alerts, progress bars and dialog boxes-- not too many! You don't want to annoy them.
+
+-   If an calculation is expensive, **delay it**. Don't make the data recalculate on every move of a slider. Ask the user to set values, and then provide a button to see the results.
+
+-   If the process is very slow, **should it be in an app**? Slow is a relative term. The time it may take for a moderately sized model to converge may be perceived as extremely slow inside an app versus in a script. Because apps are interactive, users expect to see immediate, responsive results.
+
+# Data Considerations
+
+-   in the examples so far, we've used data sets that are built in, or that we read into memory.
+
+-   this is a good strategy. If you can, keep your data compact.
+
+-   consider how you will "diffuse" your app. If you are intending to put it somewhere, or even pass it to someone else to run, you will want to pass the same version of the data that you are using.
+
+# Working with a database
+
+-   You can also connect an app to a database source
+
+-   You will need to pull data at the beginning of the app, in order for it to run. How long will this pull take?
+
+-   what if the underlying database changes? If you are publishing an app, it's possible that the data source may change (variables get renamed, formats change). Will this break the app?
+
+-   on the other hand, this can be a very useful strategy, it can add another layer of dynamism to the app.
+
+# Pool
+
+-   instead of how you may typically connect to a database, Shiny recommends using the pool package to manage a connection.
+
+-   it governs the opening, tracking, and closing of a database connection inside an app.
+
+    -   it tries to prevent connection leaks-- that could slowdown or freeze your app.
+
+-   it looks like a typical database connection in Shiny.
+
+-   here we demonstrate with a `duckdb` connection
+
+```{r eval=FALSE, include=TRUE}
+library(pool)
+
+con <- pool::dbPool(
+  drv = duckdb::duckdb(),
+  dbname = "dta",
+  dbdir=":memory:"
+)
+```
+
+# A collection of tools
+
+If you are working with "big" data, consider the following tool kit:
+
+-   [`data.table`](https://rdatatable.gitlab.io/data.table/) for expressive and efficient manipulation of large in-memory data frames
+
+-   [`vroom`](https://vroom.r-lib.org/) for fast ingestion of on-disk data
+
+-   [`duckdb`](https://duckdb.org/docs/api/r) for an on-disk frictionless database
+
+-   A full discussion of these tools is beyond the scope of this class, but know that Shiny works well with all of them, and these are ones we particularly like.
+
+# Dbplyr and Shiny
+
+`dbplyr` works nicely within shiny as well. If we are going to query a database, it makes sense to make that reactive in the context of an app.
+
+In `dbplyr`, we can establish a connection, and then use that connection to query our data.
+
+In this demo, we establish a connection to a `duckdb` object as above. This could be any database backend.
+
+Then, we use that connection to pull the unique years in our iowa database, and our unique county names. We use those values to build menu choices.
+
+Finally, when the user selects a combination of year and county, we trigger a reactive expression that gathers the data. We use that data to display a summary and a preview of the data.
+
+```{r eval=FALSE, include=TRUE}
+
+con <- pool::dbPool(
+  drv = duckdb::duckdb(),
+  dbname = "dta",
+  dbdir=":memory:"
+)
+
+dbWriteTable(con, #the name of the duckdb connection
+             "iowa", #the name of the target table
+            vroom::vroom("www/data/iowa_2022.csv"), #this is inside the www folder
+              overwrite=TRUE)  
+
+years_in_data <- dbGetQuery(con,"SELECT DISTINCT YEAR(sale_date) FROM iowa")
+years_in_data <- years_in_data |> arrange(`year(sale_date)`) |> pull(`year(sale_date)`)
+
+counties_in_data <- dbGetQuery(con,"SELECT DISTINCT county FROM iowa")
+counties_in_data <- sort(str_to_title(counties_in_data$county))
+
+## inputs
+
+selectInput("yr","Pick a year to display",choices=years_in_data),
+selectInput("county","Pick a county to display",choices=counties_in_data),
+
+
+## outputs
+
+fetch_dta <- reactive( tbl(con,"iowa") |> 
+                          filter(year(sale_date) == !!input$yr) |> 
+                          filter(county == !!input$county) |> 
+                          select(sale_date,store_number,store_name,sale_dollars) |> 
+                          collect() )
+  
+  output$vto1 <- renderPrint(
+    skimr::skim(fetch_dta())
+  )
+  
+  output$table1 <- renderTable({
+    head(fetch_dta(),20)
+  })
+```
+
+# Tidy eval inside of dbplyr
+
+-   Note above the usage of `!!input$yr`
+
+-   The !! is another form of tidy evaluation, it is an "unquoting" function that signals this is a variable to be evaluated in the app environment (not within the context of the remote table)
+
+```{r eval=FALSE, include=TRUE}
+filter(year(sale_date) == !!input$yr)
+```
+
+# Do: Working with a database
+
+-   Open the `pool-app.R` file
+
+-   Look at the code inside. Note the location of the select menus and how they gather values from the database itself.
+
+-   Look at the reactive expression.
+
+-   Run the app
+
+-   When you are done, return here.
+
+# More data sources
+
+-   For more examples of working with data storage both local and remote, consult the [article here.](https://shiny.rstudio.com/articles/persistent-data-storage.html)
+
+-   This article gives examples for:
+
+    -   local files
+
+    -   dropbox
+
+    -   amazon s3
+
+    -   sqlite (local)
+
+    -   mysql
+
+    -   google sheets
+
+    -   and mongdb!
+
+# Golem for building robust apps
+
+In an earlier notebook, we mentioned that Shiny apps can be "fragile." It's easy to forget a comma or a closing parenthesis, and your app will stop functioning.
+
+As you make your app more complex, this challenge of code-building can grow.
+
+`Golem` seeks to address this challenge. Its aim is to help make a "stable, easy-to-maintain, and robust production web app."
+
+A golem application is an R package. To use it, you need to have a basic understanding of R packages (beyond the scope of this class).
+
+When you initiate a golem project, it will populate with much more than the boilerplate Shiny app. It will create all of the required and suggested package files (like DESCRIPTION and NAMESPACE).
+
+It will also provide a folder structure for your application pieces.
+
+If you are primarily making a "one-off" app or a presentation, this class should get you there. If you are wanting to build a "large or long-term app", or your app will be the concerted effort of a team with hopefully years of service ahead of it, we recommend you read about how to produce a Shiny app [with the golem framework.](https://engineering-shiny.org/golem.html) Your future self will thank you.
+
+# Publishing Apps
+
+-   You've made an app, now what?
+
+    -   If you've built your app in a folder, and placed all the resources in that folder (images, data), you can simply share that folder. Someone who wants to use it will have to have a similar version of R and all packages in order to run it.
+
+-   You can use the `renv` package to create "reproducible environments" for your Shiny app. When you initialize an renv, it will copy all packages used into your project into that environment, and create a lockfile to record those dependencies.
+
+    -   This way you can "freeze" all the package versions, and make sure your app performs consistently!
+
+    -   Another way to manage dependencies is with the `config` package.
+
+-   To deploy your app within your company or institution, your organization needs a [shinyServer](https://www.rstudio.com/products/shiny/shiny-server/). This is software that runs "along side" a web server. This needs a technician to set it up, but once done you can securely share Shiny apps within an organization
+
+-   If your app uses no sensitive data, you can publish it to [shinyapps.io](https://www.shinyapps.io/). This is a service provided by RStudio that publishes a public repository for apps. It makes it easy to share an app with the world. There are free tiers (5 apps, limited hours) to professional tiers (unlimited apps, 10k hours of usage)
+
+# Conclusion
+
+That's it! We hope you've enjoyed your introduction to Shiny. It's a powerful framework with incredible potential, and really makes the most of R's analytic prowess.
+
+To read more about Shiny, consult the [Mastering Shiny](https://mastering-shiny.org/index.html) online book and the [Shiny sub-site at RStudio](https://shiny.rstudio.com/).
+
+Now go make some awesome apps!

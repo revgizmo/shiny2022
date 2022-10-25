@@ -11,22 +11,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Add input widgets to your app
 
--   slider
-
--   numericInput
-
--   select menu
-
--   checkboxes or radio buttons
-
--   How will your inputs connect to your summaries?
-
-    -   For instance, we suggested a table of total sales by county, and total sales by category. What if we could switch the grouping variable in the app? What kind of widget(s) would lend itself to this control?
+- slider
+- numericInput
+- select menu
+- checkboxes or radio buttons
 
 # Check the input values with a simple output
 
--   use textOutputs to confirm that the values change.
-
-# Update your layout or theme.
-
--   After you add more inputs, do you want to update your theme? Do so.
+- use textOutputs to confirm that the values change

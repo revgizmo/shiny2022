@@ -25,7 +25,7 @@ We suggest you follow the same workflow that we have demonstrated:
 
 You can divide this work up! If you have multiple team members, one person could be scripting the layout and theming options, while someone else builds the analytic code.
 
-## Make a time plan.
+Make a time plan.
 
 -   How long do you want to allow for each stage?
 
@@ -36,7 +36,3 @@ You can divide this work up! If you have multiple team members, one person could
 -   Start simple, especially in terms of the reactivity.
 
     -   If time allows, develop more complex reactive expressions as you go. But don't start with the most complex interaction you can imagine. "Frustration leads to abandonment."
-
-## If you don't have data...
-
--   We know where you can find some! <https://data.cdc.gov/>

@@ -1,0 +1,239 @@
+---
+title: "01_Shiny_Introduction"
+output: html_document
+---
+
+```{r setup, include=TRUE, eval=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction to Shiny
+
+Welcome to our introduction to creating data-driven apps with Shiny. In this lesson, we'll examine:
+
+-   what Shiny is
+
+-   the basics of how it works
+
+-   look at some examples
+
+-   inspect the code of a simple app
+
+# What is Shiny?
+
+`Shiny` is a framework for creating **data-driven web applications using R code**. It leverages the vocabulary that you already know with R and greatly enhances it by providing a way to easily build interactive applications that can run in a browser. Since browsers are a ubiquitous and cross-platform technology, Shiny provides a powerful way to move your analysis from static projects to dynamic, interactive workflows and dashboards.
+
+Historically, developing a web app was a difficult task. For a data scientist, it meant having to learn many other additional languages and technologies, such as `JavaScript`, `CSS`, `HTML`, `Perl`, `Java`... and application frameworks on top of that stack, such as `React` or `Ruby`. Those applications and languages are still around of course, and still part of the workflow for building full applications.
+
+But Shiny allows people who know R to "take a shortcut" and deliver a working, in-browser app complete with interface elements that can make use of all of the powerful modeling and analytic functions of the R language. That's huge!
+
+Shiny is [not]{.ul} a replacement for a full web application stack of technologies. If you want to develop a banking app or a browser-based game, Shiny wouldn't be your first choice. But if you primarily want to do something with data, and if you already have R code that you've developed as part of an analysis, then Shiny can be a powerful way to extend and showcase your work.
+
+# How does it work?
+
+How does Shiny simplify this process? There are two main strategies that Shiny uses to simplify app development:
+
+1.  It provides a "curated" set of **user interface** (UI) widgets that generate things like drop-down menus, buttons, tables, and images. These are the building blocks of web apps and are what drive engagement with an application. With these widgets, Shiny provides building blocks that shield you from having to learn HTML, CSS, and Javascript. However if you do know these technologies you can build on the Shiny blocks and customize your project to your heart's content.
+2.  Shiny abstracts the process of interaction with what it calls **reactive programming**. A big challenge of app development is figuring out how to get the app to *do something* when the user *clicks somewhere* (or moves a mouse, or selects a menu item, or whatever). Instead, Shiny tracks when inputs change, and keeps track of updating outputs, to make your job easier.
+
+# What is Shiny used for?
+
+If you haven't done so already, take a look at the Shiny gallery for inspirational and motivating examples of Shiny projects.
+
+*Note*: We've found that sometimes the projects linked in the Shiny Gallery become broken or don't seem to work as expected. Some of these are examples that Shiny/RStudio provides, some of them are third party sites. Making an app is one thing, [*maintaining*]{.ul} an app is another! We'll talk about this issue later in the notebooks.
+
+Some typical use cases for shiny are:
+
+-   data exploration dashboards, that perhaps provide up-to-date data tracking
+
+-   results exploration
+
+-   model explorers that allow users to change inputs and assumptions to see how such changes reflect the model
+
+-   simulations with sliders and dials for changing conditions of the simulations
+
+-   demonstrations of data or analysis principles.
+
+-   providing calculators or analytical tools
+
+# Do: Explore the Shiny Gallery
+
+> Take a few minutes (10m or longer) to explore the [Shiny gallery.](https://shiny.rstudio.com/gallery/) At the time of writing, we suggest taking a look at these examples:
+>
+> 1.  The Covid-19 tracker.
+> 2.  Exploring large hospital data.
+> 3.  A/B Testing Sample Size Calculator.
+>
+> Take note of the interface elements of these apps and how the information is presented. Think about the visualizations that are used: do these look familiar to you, from your knowledge of R?
+
+# How do we make a Shiny Project?
+
+We make a Shiny App by starting a New File or Project in the RStudio file menu.
+
+***Don't do that yet!***
+
+The flow of these notebooks will be a little bit different than a typical "R" lesson. Because we'll be creating apps and working inside of them, it can get confusing as you switch between windows.
+
+We recommend developing much of your R code as you typically do--- analyzing your data, making visualizations, then bringing that code into your Shiny project once you have the major components, and then refining from there. We will walk though this process.
+
+For teaching and following these notebooks, remember that you can also create an **additional R Session** in RStudio. This is like having another RStudio instance that can set its own project. This might work well (but keep track of your windows, and which project you are in!)
+
+# What files make up a Shiny App?
+
+Shiny apps used to be composed of several files that separated out the user interface (`ui.R`) components from the interactive components (`server.R`).
+
+Since Shiny 0.10.2, however, these two pieces can be bundled together into one file, the `app.R` file. This is simpler, but it does mean that the singular file can get a little bit unwieldy.
+
+# Do: Creating a Boilerplate Shiny App
+
+Let's make our first app. Follow these instructions, and let you teacher know if anything goes awry.
+
+1.  Under the File menu, choose `New File… > Shiny Web App…`
+
+2.  A dialog window will open. Give your new app a name, such as "`App1`"
+
+    1.  Choose the "`Single File (app.R)`" option
+
+    2.  Choose your current class project as your directory
+
+    3.  Click the "**`Create`**" button
+
+# What happened?
+
+-   RStudio created a new sub-folder for your app. It gave it the name you chose, such as "**`App1."`**
+
+-   In that directory, it created a new file called **`app.R`**
+
+    -   Notice that your [*directory*]{.ul} has the name you chose, but the [*file*]{.ul} will always be named **`app.R.`**
+
+-   RStudio opened the `app.R` file for editing.
+
+-   In practice, we recommend creating a [separate project]{.ul} for your Shiny apps (one project per app.) We think this keeps your apps and workspace more organized. In addition to creating your app folder, this method will create a project (with its own working directory, history, and environment). In the end, you can decide on the way that works best for you. There exist also advanced tools to help you build and maintain Shiny package projects, such as `golem` (more on this later).
+
+# About this class
+
+-   This series of notebooks will work a little differently than a typical "R class."
+
+-   Because it's important to see a Shiny app working, you will switch between code examples in a notebook, and sample Shiny apps.
+
+    -   You will launch the Shiny app to see the concept demonstrated.
+
+-   Code excerpts in the notebooks may be [incomplete]{.ul} code snippets
+
+    -   Don't run these cells unless instructed. They won't necessarily work independently.
+
+-   In Shiny, we often edit code in one of two places inside an app-- the `UI (user interface)`or in the `server` logic.
+
+    -   It would be tedious to keep seeing the same boilerplate code for these sections, so we will abbreviate the code snippets shown in the lesson materials.
+
+    -   To see full working demos where the code is placed in the appropriate section, you will inspect and run the indicated app.
+
+-   All of our apps are collected in a folder called "apps" instead of being in separate sub-folders. *You* should use folders to organize your apps. For this class, we didn't.
+
+# The basic parts of a Shiny App
+
+Let's look at the `app1-app.R` file for our first "App1" (or the code you just created.) Rstudio populates this file with some "boilerplate" code to help you get started.
+
+-   First, we have some comments including how to launch the app and a link to the [shiny.rstudio.com](shiny.rstudio.com) site. This is a great place to find additional lessons and help.
+
+-   next, we have a call to `library(shiny)`.
+
+-   the next chunk defines a `ui` object. **Highlight the entirety** of the `ui` definition so you are clear on where it begins and ends.
+
+    -   We'll go into more depth on the ui code in a bit. For now, just scan through it. In our app.R, the ui code runs from line 13 to a closing parenthesis on line 33.
+
+-   next is the `server` chunk. This one is a little bit shorter. **Highlight the server code.** On ours it runs from line 36 to a closing curly brace on line 46.
+
+    -   Read through the server code. We'll discuss it in detail in a bit.
+
+-   lastly, **highlight the last line** of the `app.R` file, the shinyApp function.
+
+## The Boilerplate app.R code
+
+    #
+    # This is a Shiny web application. You can run the application by clicking
+    # the 'Run App' button above.
+    #
+    # Find out more about building applications with Shiny here:
+    #
+    #    http://shiny.rstudio.com/
+    #
+
+    library(shiny)
+
+    # Define UI for application that draws a histogram
+    ui <- fluidPage(
+
+        # Application title
+        titlePanel("Old Faithful Geyser Data"),
+
+        # Sidebar with a slider input for number of bins 
+        sidebarLayout(
+            sidebarPanel(
+                sliderInput("bins",
+                            "Number of bins:",
+                            min = 1,
+                            max = 50,
+                            value = 30)
+            ),
+
+            # Show a plot of the generated distribution
+            mainPanel(
+               plotOutput("distPlot")
+            )
+        )
+    )
+
+    # Define server logic required to draw a histogram
+    server <- function(input, output) {
+
+        output$distPlot <- renderPlot({
+            # generate bins based on input$bins from ui.R
+            x    <- faithful[, 2]
+            bins <- seq(min(x), max(x), length.out = input$bins + 1)
+
+            # draw the histogram with the specified number of bins
+            hist(x, breaks = bins, col = 'darkgray', border = 'white')
+        })
+    }
+
+    # Run the application 
+    shinyApp(ui = ui, server = server)
+
+# Do: Questions
+
+We haven't discussed these components in detail yet, but with your R knowledge, you should be able to answer these questions:
+
+1.  What basic kind of R object is the `ui` object? Is it a vector? A data frame? Something else?
+
+    1.  Try running the code (after you run the library(shiny) command) that defines ui. Inspect it. What is it?
+
+2.  What basic kind of R object is the `server` object? A vector? A plot? Something else?
+
+    1.  Try running the code to define the server object. Inspect it.
+
+3.  Don't run the `shinyApp()` line yet! Just look at it. What is it? What kind of object is it, and what are the definitions inside the parentheses?
+
+# Answers.
+
+1.  The `ui` object is an R list. A list is R's most complex native object, and it can be used to store complex information. Specifically, if you call class on the ui object, you should see that it is a "list", and particularly a "shiny.tag.list"
+2.  The `server` object is a function definition. It takes two parameters, `input` and `output` (it can also take an argument called `session`).
+3.  The shinyApp is a function call (or "invocation") to a function defined in the Shiny library. This function takes the `ui` and `server` pieces and launches the app!
+
+# Do: Launching the App
+
+Go ahead and launch the app by clicking on the Run App button at the top of the file.
+
+-   Move the slider and observe the change in the histogram.
+
+-   If the app opened in a viewer, try opening it in a browser.
+
+-   Return here when you are done.
+
+# Stopping the App
+
+When you are done playing with the app, close the app or the browser tab.
+
+# Conclusion
+
+That's your introduction to your first Shiny app! In future lessons, we'll examine the ui and server objects in depth, and see how to work with more interface and layout structures and connect them via reactivity to working code.

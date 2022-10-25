@@ -14,3 +14,9 @@
 /notebooks_html/05_Reactivity.html filter=lfs diff=lfs merge=lfs -text
 /notebooks_html/06_Data_and_Robustness.html filter=lfs diff=lfs merge=lfs -text
 /notebooks_rmd/04_Outputs_and_Other_Topics.html filter=lfs diff=lfs merge=lfs -text
+/rmd/01_Intro_to_Shiny.html filter=lfs diff=lfs merge=lfs -text
+/rmd/02_Layouts_and_Workflows.html filter=lfs diff=lfs merge=lfs -text
+/rmd/03_Elements_and_Inputs.html filter=lfs diff=lfs merge=lfs -text
+/rmd/04_Outputs_and_Other_Topics.html filter=lfs diff=lfs merge=lfs -text
+/rmd/05_Reactivity.html filter=lfs diff=lfs merge=lfs -text
+/rmd/06_Data_and_Robustness.html filter=lfs diff=lfs merge=lfs -text

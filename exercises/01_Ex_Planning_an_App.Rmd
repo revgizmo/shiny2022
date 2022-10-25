@@ -5,103 +5,10 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
-library(tidyverse)
 ```
 
 # Plan and Script an Analysis
 
--   No Shiny code (yet)
+- No Shiny code (yet)
 
--   We will make a data explorer of the Iowa liquor dataset. This is a public dataset of liquour sales in Iowa.
-
-## Explore the data
-
--   Read in the Iowa liquour dataset. It's quite large! (Try the `vroom` package to read in this large csv.)
--   Use janitor::clean_names() to rename the variables.
--   Summarize the data with skimr or your summary function of choice.
-
-
-```{r}
-iowa_2022_df <- read_csv('../Data/iowa_2022.csv') %>% janitor::clean_names()
-ia_counties_df <- read_csv('../Data/IA_counties.csv') %>% janitor::clean_names()
-
-```
-
-```{r}
-skimr::skim(iowa_2022_df)
-```
-
-
-
-## Examine the county information
-
-Look at the county information.
-
--   How many unique counties are there?
-
-```{r}
-iowa_2022_df %>% count(county)
-```
-
-
--   Look at the unique counties. Is there a data quality issue to address? Do so.
-
-
-```{r}
-iowa_2022_df <- iowa_2022_df %>% mutate(county_clean = str_to_title(county),
-                                        county_clean = if_else(county_clean == 'Pottawatta', 'Pottawattamie', county_clean),
-                                        county_clean = if_else(county_clean == 'Cerro Gord', 'Cerro Gordo', county_clean))
-
-
-iowa_2022_df %>% count(county_clean)
-```
-
-
--   Read in the list of counties in Iowa from the IA_counties.csv.
-
--   Match the counties you have to the list of counties. Are all counties present in your data?
-
--   Are there any other issues with your county names? Fix as needed.
-
-## Examine the date variable
-
--   Convert the date to a formatted date object.
-
--   What is the range of years in the data?
-
-## Filter the data to just 2020
-
--   Filter the data to the 2020 records.
-
--   How many records are there?
-
--   How many categories of products are in the 2020 data?
-
-## Summarize the 2020 data
-
--   What was the total volume sold in liters for 2020?
-
--   What was the total sales in dollars for the 2020 data?
-
--   How many distinct counties had liquor sales in 2020?
-
-## Create Summaries for our app
-
--   create the following summaries for our app out of the 2020 data:
-
-    -   Total sales by county in terms of dollars
-
-    -   Total sales by category name
-
-    -   Most frequently sold counts of category names
-
-    -   Create a variable that simplifies the categories. We choose "Whisky," "Vodka," "Rum," "Gin," "Liqueur" and "other," but you can choose your own.
-
-    -   Summarize the count of sales by your simplified categories.
-
-    -   Summarise the total sales by month for 2020
-
-    ## Visualizations
-
-    -   We'll produce visualizations in a future exercises. If you have additional time, keep exploring and make your own visualizations.
+- We will make a data explorer of the Iowa liquor dataset. This is a public dataset of liquour sales in Iowa.

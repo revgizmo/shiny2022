@@ -1,0 +1,296 @@
+---
+title: "05_Reactivity"
+output: html_document
+---
+
+```{r setup, include=TRUE, eval=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Reactive Programming
+
+Ok, we've taken a thorough tour of the components of Shiny. And we've already started to make some connections! You've seen how we can link **inputs** to **outputs** to register changes in an input and have a variable react.
+
+We'll revisit that connection, and then go a little bit deeper into the concept of **"reactive programming,"** where we see how script the interactivity that make Shiny so useful.
+
+# What is reactive programming?
+
+Reactive programming is a style of programming that highlights how values change and how other values depend on those values. It encapsulates the interactivity behind a Shiny app.
+
+In a typical R script, we might run our code in an imperative, procedural or sequential way:
+
+1.  read in data
+2.  calculate data
+3.  update data
+4.  re-calculate data
+5.  etc...
+
+With Shiny apps, there isn't the same idea of a "beginning" and "end." There is the initial state of the app, but then the user can choose *any path* through the app to produce a result.
+
+Reactive expressions and outputs update if and only if their inputs change. This is a key property that we want for nicely working apps.
+
+# Non-reactive programming
+
+Let's recap non-reactive programming, which you are familiar with.
+
+We want to calculate bmi's for several records. We enter the `heights`, `weights`, and an expression for making the bmi calculation.
+
+We inspect the `bmi` variable after we make the calculation.
+
+```{r echo=TRUE}
+height <- c( 60,  62,  61,  65) 
+weight <- c(135, 155, 145, 155)   
+bmi <- (weight  * 703 )/ height^2 
+bmi
+```
+
+Great! Now we want to update one of the weights.
+
+```{r echo=TRUE}
+weight[2] <- 150
+```
+
+What happened to bmi?
+
+```{r echo=TRUE}
+bmi
+```
+
+Umm...nothing.
+
+We remember this lesson from learning R. In order to update bmi, we have to [*recalculate*]{.ul} it. Which means we have to be aware of the fact that either the heights or the weights (or both) have changed.
+
+```{r echo=TRUE}
+bmi <- (weight  * 703 )/ height^2 
+bmi
+```
+
+This is the problem reactive programming tries to solve. "Reactivity" is typical of the way spreadsheet programs work if you use formulas. When a source cell changes, the calculation updates and propagates through the spreadsheet.
+
+# Reactive values
+
+-   With Shiny, we register that we have a special type of variable, a **reactive value**.
+
+-   A reactive value has a get method which returns its value (calling the variable with empty parentheses)
+
+-   and a set method which sets its value (calling it with one argument)
+
+```{r echo=TRUE}
+library(shiny)
+reactiveConsole(TRUE)
+weight <- reactiveVal(c(135, 155, 145, 155)  )
+weight() # getting values
+weight( c(135, 150, 145, 155) ) # setting values
+weight()
+```
+
+-   Then we can create a reactive expression that depends on this value
+
+-   We treat the reactive value as a function, calling it with parentheses.
+
+```{r echo=TRUE}
+height <- reactiveVal(c( 60,  62,  61,  65)) 
+bmi <- reactive({( weight()  * 703 ) / height() ^ 2 })
+bmi()
+```
+
+-   Now if we update `weight` (or `height`, since we also made it reactive), `bmi` will update as well.
+
+```{r echo=TRUE}
+weight(c(100,100,100,100))
+bmi()
+```
+
+-   However-- if none of the dependencies have changed, then `bmi` can just read from the cache. It doesn't need to re-calculate, if it's not necessary.
+
+```{r echo=TRUE}
+bmi()
+```
+
+Thus, reactive expressions have two properties:
+
+-   they are **lazy**. They don't do anything until we invoke them.
+
+-   they **cache**. They store previous results and only recalculate if needed.
+
+# Server
+
+When you launch a Shiny app, the `server()` function gets invoked. The server function creates its own local **environment**. An environment is the namespace in R that stores variables and their values. Having its own environment means that the Shiny app *isolates variables* created inside the server function. This is why you do reactive programming *inside* the server function.
+
+The server function will always take three parameters: `input`, `output`, and `session`. You don't have to worry about session until you become more advanced.
+
+# Input
+
+We've seen how to create inputs. How does Shiny think about them?
+
+The `input` argument to `server` is a list of all the input data sent from the browser. It's gathered up all the ids that you've assigned to your inputs, and their initial values.
+
+`input` objects are [read-only.]{.ul} You cannot set them inside the server function. You can only set them via their interface or widget-- makes sense! Otherwise, things could get out of sync and inconsistent.
+
+inputs are reactive values. But they change by virtue of a widget, not via programming.
+
+Another important aspect of inputs is that you can only read them inside a [**reactive context**]{.ul}, such as a function like `renderText()` or `reactive().` This allows the contents to automatically update.
+
+# Output
+
+`output` is like input-- a list-like object of all the output Ids.
+
+outputs always pair with a render function.
+
+```{r eval=FALSE, include=TRUE}
+
+server <- function(input,output,session){
+  output$some_text <- renderText("This is a message.")
+}
+```
+
+`render` functions do two things:
+
+-   they establish a reactive context that tracks the inputs and outputs
+
+-   they convert your R code to appropriate HTML code
+
+-   you [must]{.ul} use a render function with an output.
+
+# Reactive graph
+
+To understand how a Shiny app works, we can look at its **reactive graph**. A reactive graph is a schematic of how inputs are connected to outputs. It shows us the **reactive dependency** of an input to an output.
+
+Here is a [link to a basic reactive graph of an example](https://mastering-shiny.org/basic-reactivity.html#the-reactive-graph) in the Mastering Shiny book.
+
+You can draw the reactive graph for an app using the `reactlog` package.
+
+To use the `reactlog` package with the simple example react1 in the apps folder:
+
+1.  Install `reactlog` if you don't have it (`install.packages("reactlog"))`
+2.  Start reactlog with `reactlog::reactlog_enable()`
+3.  Run the app with `runApp('apps/react1')`
+4.  Close the app
+5.  Show the graph with `shiny::reactlogShow()`
+
+```{r eval=FALSE, include=TRUE}
+install.packages("reactlog")
+reactlog::reactlog_enable()
+runApp('apps/react1')
+# ...
+shiny::reactlogShow()
+```
+
+# Do: Reactive expressions
+
+This app had a direct connection between the input and the output.
+
+But we can also reactive expression. This expression sits between the input and output.
+
+The reactive expression "catches" the input, does something to it, and then sends the message along to the output. So we can interrupt the "direct connection" and introduce more complexity, which can be useful.
+
+For instance, we might want to calculate on data once a slider changes, but then update two different outputs.
+
+Here is the modification of our simple app with a reactive expression (though not very useful). Look at the source, and then look at the reactive graph for this app.
+
+```{r eval=FALSE, include=TRUE}
+numericInput("numericIn1",
+                         label = "Choose your favorite number",
+                         value = 42,
+                         min = 0,
+                         max = 100)
+# ...
+server <- function(input, output) {
+  
+    msg <- reactive({glue::glue("I love the number {input$numericIn1}!")})
+    
+    output$textOut1 <- renderText({
+      msg()
+    })
+    
+}
+```
+
+# Execution order
+
+Note that the execution of the order in the app is [not]{.ul} the order of the lines in the server function.
+
+-   We declared the `msg()`reactive expression.
+
+-   Then we used it in the ouput `render` function.
+
+-   But we could declare the output function [first]{.ul}-- it doesn't matter. What matters is *how the user interacts with these components.* It's really the reactive graph that drives how the app works.
+
+# observeEvent
+
+-   Use `observeEvent()` when you want to perform an action in response to an event, like clicking on a button.
+
+-   the first argument is the event you want to respond to
+
+-   the second argument is the function that will be called in response.
+
+-   this technique can be good for making alerts or messages, as we saw earlier with the notifications.
+
+    -   this can be a really helpful technique for debugging your app.
+
+```{r eval=FALSE, include=TRUE}
+actionButton("but1","Click me!")
+#
+plotOutput("po1")
+#
+observeEvent(input$but1, {
+   message("Data will be simulated") #see this in the R console
+})
+```
+
+# eventReactive
+
+-   if we want to take a calculation in response to an event, we can use `eventReactive()`
+
+-   observeEvent doesn't assign a result back to a variable: eventReactive *can.*
+
+-   we can refer to that value from other consumers.
+
+-   use it if you want to delay an expensive action.
+
+-   for instance, here we simulate new data only once the button has been clicked.
+
+```{r eval=FALSE, include=TRUE}
+ui <- fluidPage(
+  actionButton("but1","Click me!"),
+  plotOutput("po1")
+)
+
+server <- function(input, output, session) {
+  
+  observeEvent(input$but1,{
+    message("Data will be simulated") #this message appears in the R console
+  })
+  
+  dta <- eventReactive(input$but1, {
+    rnorm(100)
+  })
+  
+  output$po1 <- renderPlot({
+    req(dta)
+    hist(dta())
+  })
+}
+```
+
+# Do: Inspect Observe-App
+
+-   take a look at the `observe-app.R`
+
+-   note that two things happen when you click the button:
+
+    -   a message gets sent to the R console
+
+    -   the data gets resimulated and plotted
+
+-   Return here when you are done.
+
+# Conclusion
+
+Thus, we can link inputs to outputs with reactivity.
+
+This is a brief introduction to the ideas of reactive programming inside of Shiny. In the book, you can find [more examples of advanced reactivity topics](https://mastering-shiny.org/reactivity-intro.html), such as [timed invalidation]{.ul} (you want to resimulate data on a timer, for example) or [error handling.]{.ul}
+
+These are important use cases, but you can study them later when your need grows. At the beginning, *make your app as simple as you can.* If you try to start with a very complex reactive graph, chances are you will get frustrated and abandon the project.
+
+You now have all the tools to build a richly expressive and interactive app!

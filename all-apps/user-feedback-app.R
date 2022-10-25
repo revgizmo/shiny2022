@@ -40,7 +40,7 @@ server <- function(input, output, session) {
       tinum3 <- readr::parse_number(input$ti3)
       pass1 <- tinum1 < 0
       shinyFeedback::feedbackWarning("ti1",pass1,"Less than 0")
-      pass2 <- tinum2 <= 100
+      pass2 <- tinum2 > 100
       shinyFeedback::feedbackDanger("ti2",pass2,"Greater than 100")
       pass3 <- tinum3 == 42
       shinyFeedback::feedbackSuccess("ti3",pass3,"The answer!")
