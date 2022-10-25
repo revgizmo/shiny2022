@@ -1,0 +1,42 @@
+---
+title: "06_Your_App"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Your Turn!
+
+For this final day, you will practice making your own app in your teams.
+
+We suggest you follow the same workflow that we have demonstrated:
+
+1.  Sketching & planning
+2.  Coding without shiny
+3.  Deciding on a layout
+4.  Putting placeholders in the layout
+5.  Adding inputs
+6.  Adding outputs
+7.  Connecting with reactive expressions
+8.  Test & modify, get feedback
+9.  Update
+
+You can divide this work up! If you have multiple team members, one person could be scripting the layout and theming options, while someone else builds the analytic code.
+
+## Make a time plan.
+
+-   How long do you want to allow for each stage?
+
+    -   *Spending* time [planning]{.ul} will *save* you time [building]{.ul}. Don't skip this step!
+
+-   Plan to iterate over your design. Test it, evaluate it, "rinse & repeat"!
+
+-   Start simple, especially in terms of the reactivity.
+
+    -   If time allows, develop more complex reactive expressions as you go. But don't start with the most complex interaction you can imagine. "Frustration leads to abandonment."
+
+## If you don't have data...
+
+-   We know where you can find some! <https://data.cdc.gov/>

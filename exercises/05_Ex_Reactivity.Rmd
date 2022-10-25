@@ -1,0 +1,34 @@
+---
+title: "05_Reactivity"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Adding Reactivity
+
+-   You may already have reactive connections from linking inputs to outputs
+
+-   Here, we will add some reactive expressions
+
+-   We may also add an observer.
+
+-   If you've used a drop-down menu, you can now link the choice in that menu to the output that changes in your app.
+
+-   Consider reactive expressions and eventReactive expressions as well.
+
+    -   Remember that you may need to use some form of "tidy evaluation" in your code. The solution shows some examples.
+
+# Start Simple
+
+-   Start simple, and then build more complex reactions.
+
+-   Expect that it won't work the first time. Experiment with your approach to your code.
+
+-   [The Shiny Widget Gallery can show code,](https://shiny.rstudio.com/gallery/widget-gallery.html) although these are often simple connections of inputs to outputs.
+
+# Layout
+
+As before, update your layout and theme as needed.

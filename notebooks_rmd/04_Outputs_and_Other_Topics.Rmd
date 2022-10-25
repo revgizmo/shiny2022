@@ -1,0 +1,491 @@
+---
+title: "Outputs"
+author: "Jemma Nelson, written for BH Analytics, LLC"
+output: 
+  # slidy_presentation:
+  #   highlight: pygments
+  html_document:
+    toc: true
+    toc_float: true
+  # pdf_document:
+  #   keep_tex: yes
+  #   latex_engine: xelatex
+  #   number_sections: yes
+  #   toc: yes
+  #   toc_depth: 1
+
+---
+
+```{r setup, include=TRUE, eval=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+my_func <- function(x) {
+  output <- x+1
+  return (output)
+}
+```
+
+
+```{r}
+my_func(1)
+```
+
+# Outputs
+
+In this notebook, we'll look at the **outputs** that Shiny provides.
+
+There aren't as many output choices as there are for **inputs**. To get started, we'll just cover some of the main ones.
+
+We'll also talk about some miscellaneous topics (tidy evaluation, graphics).
+
+After this, we'll see how to connect all the plumbing with reactivity!
+
+# Where to place outputs
+
+-   you can place outputs anywhere in your Shiny app
+
+-   for our demo, we'll be concentrating on the same basic layout and the `mainPanel`().
+
+-   the basic app already has a plotOutput. We'll work around this component.
+
+# Render functions
+
+-   to be able to see the results of these outputs, it's best if we put something in them, like text or a table or a graph
+
+-   we'll also introduce render functions in this notebook, such as `renderText()`
+
+# Connecting outputs to renders
+
+-   in the server function of shiny, we'll connect the outputs to their rendering functions.
+
+-   The code will follow this pattern:
+
+    -   `output$outputId <- renderText({"some expression"})`
+
+# Text Output
+
+-   you can output regular text with a `textOutput()`
+
+-   for fixed code and console output, use `verbatimTextOutput()`
+
+-   all outputs need an `outputId`. This is always the first argument.
+
+-   to see results of a textOutput in an output, use `renderText()` or `renderPrint()`
+
+    -   the render functions enclose their parameters inside curly braces, such as this pattern:
+
+    -   `renderText({ "This will be some text" })`
+
+    -   the curly braces are needed for multiple lines of code. Above, we could have omitted them since we had a single line of code.
+
+    -   `renderText` combines results into a single string, like a `cat` function.
+
+    -   `renderPrint` *prints* the results like you are in the console
+
+```{r eval=FALSE, include=TRUE}
+mainPanel(
+           textOutput("someText"),
+           verbatimTextOutput("someCode")
+        )
+
+# ...
+server <- function(input, output) {
+
+    output$someText <- renderText({"This is some text"})
+    output$someCode <- renderPrint({"This will look like console code"})
+}
+```
+
+# Do: Add the outputs to the basic app
+
+-   Take a moment and add a text and verbatim text output to the **`basic`** app
+
+-   The outputs should go in the mainPanel
+
+-   the render functions should go inside the server logic
+
+-   test your app, then return here.
+
+# Tables
+
+-   There are different options for displaying data frames
+
+-   `tableOutput()` and `renderTable()` show a fixed table of data with all of the data visible
+
+-   `dataTableOutput()` and `renderDataTable()` show a dynamic table with controls.
+
+    -   `tableOutput` is most useful for small tables
+
+    -   `dataTableOutput` is better if you want the user to browse through the data
+
+-   other options are the `reactable` package, which we will demonstrate
+
+-   both outputs need to specify an `outputId`
+
+```{r eval=FALSE, include=TRUE}
+tableOutput("table1"),
+dataTableOutput("table2")
+
+#...
+output$table1 <- renderTable(head(CO2))
+output$table2 <- renderDataTable(CO2)
+```
+
+# Reactable tables
+
+-   **`reactable`** tables are an alternative dynamic table
+
+-   you need to `install.packages("reactable")`, and then `library(reactable)`
+
+-   like the DataTable output, these tables are sortable and paginated
+
+-   but you can do a lot more! You can control sorting of columns, filtering, searching, aggregation, and column formatting.
+
+-   here, we demo some formatting. Read through the [reactable docs](https://glin.github.io/reactable/index.html) for many more options!
+
+-   to use a reactable in shiny, first call `library(reactable)` after you call `library(shiny)`
+
+-   create a `reactableOutput()`with an outputId
+
+-   and call `renderReactable()` in your server logic.
+
+```{r eval=FALSE, include=TRUE}
+reactableOutput("table-reactable")
+
+#...
+output$table-reactable <- renderReactable(reactable(CO2))
+```
+
+# Do: Try out the reactable table
+
+-   in the `apps` folder, there is a file called `reactable-app.R`
+
+-   Run this app. It's got a little more "fancy" styling.
+
+-   Look at the code that generates the styling, and see if you can understand what it's doing.
+
+-   We won't cover `reactable` in depth, but we think it's worthwhile for you to know about it!
+
+-   You can also see examples of other tables in the `outputs1-app.R`
+
+# Plots
+
+-   plots in a shiny app can be more dynamic that a static R graphic
+
+-   in fact, plots can respond to different mouse events: `click`s, `dblclick`s, `hover`s, and `brush`es.
+
+-   let's examine how a click can enhance your plot, using a basic R scatterplot.
+
+-   You can detect a click on a plot, and then report its mouse location on the scale of the data within the plot
+
+-   Or, you can use the helper function nearPoints() to show nearby points in the data. This could be used as an "outlier (or inlier) explorer."
+
+    ```{r eval=FALSE, include=TRUE}
+    plotOutput("aPlot", click = "plot_click"),
+    verbatimTextOutput("vto"),
+    h4("Nearby points: "),
+    tableOutput("data")
+
+    # ...
+
+    output$aPlot <- renderPlot({
+        plot(CO2$conc, CO2$uptake)
+        abline(lm(uptake ~ conc, data = CO2), col = "magenta", lwd = 3)
+      })
+      
+      output$vto <- renderPrint({
+        # make sure there's been a click
+        req(input$plot_click)
+        x <- round(input$plot_click$x, 2)
+        y <- round(input$plot_click$y, 2)
+        
+        glue::glue("{x}, {y}")
+      })
+      
+      output$data <- renderTable({
+        req(input$plot_click)
+        nearPoints(CO2, input$plot_click, xvar = "conc", yvar = "uptake")
+      })
+    ```
+
+# Do: Plots app
+
+-   Try this out in the `plots` app.
+
+-   You can also see a demo of brushing (dragging) over points. Look at the code, can you see how it works?
+
+-   You can also make more modifications to a plot, but we'll need reactivity to do much more, so we'll return to these ideas later.
+
+# User Feedback
+
+Making an app means that you are changing the way you analyze your data. In fact, you are turning control over to a user. It's a rule that users will do the *unexpected*. They will try to put in values that are out of bounds, or use interface elements in an unexpected way.
+
+It's always a good idea to test your app out with a focus group of potential users if you plan to release it as a public tool. Even if you only plan to share it with a few team members, have someone use your app and watch what they do and how they do it.
+
+Beyond testing, Shiny can provide user feedback in a variety of ways within the app. A full discussion is out of scope here, but there is a great chapter in Mastering Shiny on User Feedback, and we encourage you to read that in full. Here, we just touch on a few topics: **input validation**, **notifications** like progress bars, and **confirmation**.
+
+# Validation
+
+The most helpful feedback you can give a user is a notice of bad input. If you use a slider or menu element, you can of course set the range of slider or control the menu values. If you ask for other input, it's good to [state explicitly]{.ul} the range and format of values that you will accept.
+
+Otherwise, you can pass a message to the user if they provide poor input. You can do this through the shinyFeedback package which provides feedback functions:
+
+-   `feedback()`, `feedbackWarning()`, `feedbackDanger()`, and `feedbackSuccess()`
+
+    -   it's good to use "carrots" as well as sticks! Tell you user when they also do things [right]{.ul}!
+
+-   feedback goes in the server part of your app
+
+-   here, we've also used "`reactive`" to check on the answers-- we'll talk about that soon.
+
+-   and we've `req`uired all the inputs to pass before we show the answer.
+
+```{r eval=FALSE, include=TRUE}
+sidebarLayout(
+        sidebarPanel(
+            p("We should really be specific about allowed values."),
+            p("But if we weren't, how could we alert the user?..."),
+            p("Try entering a negative number,"),
+            textInput("ti1","Input a value", value="enter a value"),
+            p("And a number greater than 100"),
+            textInput("ti2","Input a value", value="enter another value"),
+            p("And the number 42"),
+            textInput("ti3","Input a value", value="enter another value"),
+            p("Then correct your inputs to make them in bounds (between 0 and 100)")
+        ),
+
+        
+        mainPanel(
+          h3("The answer will appear when the inputs are right..."),
+           textOutput("to")
+        )
+    )
+# ...
+server <- function(input, output, session) {
+
+    tout <- reactive({
+      tinum1 <- readr::parse_number(input$ti1)
+      tinum2 <- readr::parse_number(input$ti2)
+      tinum3 <- readr::parse_number(input$ti3)
+      pass1 <- tinum1 < 0
+      shinyFeedback::feedbackWarning("ti1",pass1,"Less than 0")
+      pass2 <- tinum2 > 100
+      shinyFeedback::feedbackDanger("ti2",pass2,"Greater than 100")
+      pass3 <- tinum3 == 42
+      shinyFeedback::feedbackSuccess("ti3",pass3,"The answer!")
+      # require all the inputs to be proper
+      req(!pass1 & !pass2 & pass3)
+      # and then produce the sum
+      tinum1 + tinum2 + tinum3
+    })
+    
+    output$to <- renderText(tout())
+}
+```
+
+# Do: User Feedback
+
+-   Try out the validation messages in the `user-feedback-app.R`
+
+-   Look at the code
+
+-   Try entering values.
+
+-   Return here when you are done.
+
+# Notifications
+
+-   Notifications are another component to user feedback. With a notification, you can tell the user that something happened, like a click on a button.
+
+-   You can remove the notification on completion of a process.
+
+-   You can provide progressive updates.
+
+-   The message will be styled differently according to its "type" (default, message, warning, error) and the app theme.
+
+-   In the notifications app, we demonstrate a notification in response to a button press. The notification fades away after a short time.
+
+```{r eval=FALSE, include=TRUE}
+ui <- fluidPage(
+
+    # Application title
+    titlePanel("Notifications"),
+
+     
+    sidebarLayout(
+        sidebarPanel(
+            actionButton("but1","Press me!")
+        ),
+
+        # Show a plot of the generated distribution
+        mainPanel(
+           textOutput("to")
+        )
+    )
+)
+
+
+server <- function(input, output) {
+    observeEvent(input$but1,{
+      showNotification("You pressed!", type="message")
+    })
+    output$to <- renderText("nothing too exciting here.")
+}
+```
+
+# Progress Bars
+
+If a process will take a while, it's a good idea to provide a progress bar. Without a signal, the user may think that they haven't completed an action, or that the app has crashed or stopped working.
+
+Shiny provides some built-in progress bars, but also points to another package specifically for these notifications, called `waiter`.
+
+We don't provide a demo, but encourage you to consult the [relevant section in Mastering Shiny.](https://mastering-shiny.org/action-feedback.html#progress-bars)
+
+# Confirmation
+
+Another useful feedback is an event confirmation. If the user is going to do something that might be difficult or dangerous, it's good to provide a confirmation.
+
+A confirmation will ensure the user knows something is about to happen and approves.
+
+The confirmation is more assertive through a dialog box. This pops up on screen, and a user has to dismiss it (somehow).
+
+```{r eval=FALSE, include=TRUE}
+# add this outside of ui or server
+modal_confirm <- modalDialog(
+  "Do you really want to do this?",
+  title = "In the danger zone",
+  footer = tagList(
+    actionButton("cancel","Cancel",class="btn btn-info"),
+    actionButton("ok","Confirm",class="btn btn-danger")
+  )
+)
+
+# ... 
+# add a button
+actionButton("but2","Head into the Danger Zone!", class="btn btn-warning")
+# ... inside server
+# observe the button, and the buttons inside the modal
+observeEvent(input$but2,{
+      showModal(modal_confirm)
+    })
+    observeEvent(input$ok,{
+      showNotification("Approved",type="warning")
+      removeModal()
+    })
+    observeEvent(input$cancel,{
+      showNotification("Denied!",type="error")
+      removeModal()
+    })
+```
+
+# Do: Try this in an app
+
+-   Try out the notifications and confirmations in the `notifications` app
+-   confirm that you understand where the `modalDialog()`is created
+-   notice the usage of `observeEvent`. We'll return to this in more depth.
+
+# Tidy Eval
+
+As a final concept before we dive into reactivity, we need to understand the concept of **tidy evaluation** within a Shiny app.
+
+If you have tried to dynamically program `dplyr` or `ggplot2` expressions, you may have run into this issue already. Recall how we can refer to variables by their name only within a dplyr pipeline? This is a great convenience that saves us a lot of keystrokes. We don't have to use dollar sign (`df$var`) notation, and the result is more readable.
+
+This can happen because the dplyr pipeline defines a data context. In other words, the dplyr expression is aware that it should look for that variable *within* the data that is defined at the start of the pipeline.
+
+But this solution involves a tradeoff: now when we *want* to refer to an "external" variable (external to the data context), we have to signal our intentions.
+
+# Tidy Eval within dplyr
+
+Let's look at some non-Shiny examples, because this will translate directly into the Shiny context. We want to make a simple dplyr pipeline:
+
+```{r}
+library(dplyr)
+library(tidyr)
+#note this (|>) is the new R pipe, but it works the same as the tidyverse one (%>%)
+CO2 |> 
+  group_by(Type, Treatment) |> 
+  summarise(avg_uptake = mean(uptake,na.rm=T)) |> 
+  ungroup() |> 
+  pivot_wider(id_cols=Type, values_from = avg_uptake, names_from = Treatment)
+  
+```
+
+# Making it dynamic
+
+What if we want to replace the "Type" variable by something else? We want to change to the Plant variable, for example (maybe that doesn't make much sense in terms of the data, but for illustration purposes), but we don't want to "hard-code" which variable it is. Instead, we want to supply the grouping variable...*as a variable itself.*
+
+We might try this solution, but it will cause an error. It looks for a variable inside of the data frame called "grp_var," but of course it can't find one.
+
+```{r}
+grp_var <- "Plant"
+
+# uncomment to see the error
+# CO2 |> 
+#   group_by(grp_var, Treatment) |> 
+#   summarise(avg_uptake = mean(uptake,na.rm=T)) |> 
+#   ungroup() |> 
+#   pivot_wider(id_cols=Type, values_from = avg_uptake, names_from = Treatment)
+```
+
+Instead, we need to signal that this variable needs to be interpreted within the context of the data. We use the `.data` pronoun to refer to the data, and `[[varname]]` to specify the name.
+
+-   `.data[[varName]]`
+
+```{r}
+# this works
+grp_var <- "Plant"
+
+CO2 |> 
+  group_by(.data[[grp_var]], Treatment) |> 
+  summarise(avg_uptake = mean(uptake,na.rm=T)) |> 
+  ungroup() |> 
+  pivot_wider(id_cols=.data[[grp_var]], values_from = avg_uptake, names_from = Treatment)
+
+```
+
+# Tidy Eval within Shiny
+
+We will need to follow the same pattern in Shiny with inputs and outputs.
+
+```{r eval=FALSE, include=TRUE}
+# input
+selectizeInput("grpvar","Select a grouping variable",
+                           choices=c("Plant","Type"))
+
+# ...
+
+output$vto1 <- renderPrint({
+      CO2 |> 
+        group_by(.data[[input$grpvar]], Treatment) |> 
+        summarise(avg_uptake = mean(uptake,na.rm=T)) |> 
+        ungroup() |> 
+        pivot_wider(id_cols=.data[[input$grpvar]], values_from = avg_uptake, names_from = Treatment)
+    })
+```
+
+# Unquoting
+
+-   Sometimes, instead we need to "unquote" a variable name.
+
+-   Unquoting means that we need the variable evaluated in the context of the shiny app.
+
+-   it follows this pattern:
+
+    -   `!!varName`
+
+-   We will show an example of unquoting in the context of database pipelines.
+
+# Do: Tidy Eval app
+
+-   Examine the `tidy-eval` app.
+
+-   Note how to refer to the menu variable within the context of the output.
+
+# Conclusion
+
+We're ready for reactivity! Now we'll see how to actually get a Shiny app to *do* something when you move a widget or menu.
+
+You've already seen this in the demo app, and by now you've probably figured out the basics of responsive, interactive programming. But Shiny's reactive program can really take a hold of how we process user input, so it's worthwhile to understand its complexity.

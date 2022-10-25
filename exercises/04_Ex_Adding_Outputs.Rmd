@@ -1,0 +1,42 @@
+---
+title: "04_Add_Outputs"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Add Outputs
+
+-   Now, add your proper outputs to the app.
+
+-   Add plots where needed, verbatimTextOutputs, and reactables (if you are using them)
+
+-   if the output is a simple connection to the input, connect it.
+
+    -   If the output responds to the input (a choice in the menu, for example), we need to learn about reactivity first. That lesson is next. You can try to connect the input and see how the app may fail.
+
+    -   We want to use the summaries that we developed in part 1 (pick at least 3 from this collection):
+
+        -   Total sales by county in terms of dollars
+
+        -   Total sales by category name
+
+        -   Most frequently sold counts of category names
+
+        -   Create a variable that simplifies the categories. We choose "Whisky," "Vodka," "Rum," "Gin," "Liqueur" and "other," but you can choose your own.
+
+            -   Summarize the count of sales by your simplified categories.
+
+        -   Summarise the total sales by month for 2020
+
+        -   Which of these can be represented by tables? Which might lend themselves to visualizations? We've provided one possible solution, but you can choose your own.
+
+# Update your theme
+
+-   After you add the outputs and have them working, adjust your layout and theme.
+
+# Add more elements
+
+-   Does this give you an idea for more elements? Build more outputs as you see fit.

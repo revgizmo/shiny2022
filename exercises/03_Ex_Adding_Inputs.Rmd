@@ -1,0 +1,32 @@
+---
+title: "03_Add_Inputs"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Add Inputs
+
+Add input widgets to your app
+
+-   slider
+
+-   numericInput
+
+-   select menu
+
+-   checkboxes or radio buttons
+
+-   How will your inputs connect to your summaries?
+
+    -   For instance, we suggested a table of total sales by county, and total sales by category. What if we could switch the grouping variable in the app? What kind of widget(s) would lend itself to this control?
+
+# Check the input values with a simple output
+
+-   use textOutputs to confirm that the values change.
+
+# Update your layout or theme.
+
+-   After you add more inputs, do you want to update your theme? Do so.

@@ -1,0 +1,333 @@
+---
+title: "02 Making a Shiny Data Explorer"
+author: "Jemma Nelson, written for BH Analytics, LLC"
+output: 
+  # slidy_presentation:
+  #   highlight: pygments
+  html_document:
+    toc: true
+    toc_float: true
+  # pdf_document:
+  #   keep_tex: yes
+  #   latex_engine: xelatex
+  #   number_sections: yes
+  #   toc: yes
+  #   toc_depth: 1
+---
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Making a Shiny Data Explorer
+
+In this notebook, we'll look at layout components for Shiny apps. Layouts are the arrangements of widgets and tables in the app, also referred to as the **user interface.**
+
+We'll make changes to an app skeleton as we go, adding more and more features. This can get complicated! We've tried to provide intermediate stages of the apps, so if things break you can always jump back in to a version of the app.
+
+# Making a Simple Shiny App
+
+As we saw in the previous lesson, we can make a simple Shiny app using boilerplate code.
+
+Actually, we can make an even more minimalistic app. This is the smallest shiny app you can make:
+
+    library(shiny)
+    ui <- fluidPage()
+    server <- function(input,output,session) { }
+    shinyApp(ui, server)
+
+# Creating the Skeleton Code
+
+We can use RStudio snippets to create this code.
+
+-   create a new R script file called `min-app.R`
+
+-   in the app.R script, start typing `shinyapp` and then look for a **snippet to pop up**. Select the snippet, and it should populate your file with this skeleton code.
+
+-   save your min-app.R file again.
+
+# Workflow for Shiny Apps
+
+As we create several Shiny apps, we will practice an iterative workflow:
+
+1.  Edit some R code
+2.  Launch the app (with a button or the `Cmd/Ctrl+Shift+Enter` shortcut)
+3.  Inspect and try the app
+4.  Close and repeat
+
+You can also speed up your workflow by running the app as a background job and turning on autoreload. We won't do this here, but you can read about it in the [Shiny book](https://mastering-shiny.org/action-workflow.html#seeing-your-changes).
+
+# Layouts
+
+In our boilerplate code, we defined the ui component with a `fluidPage()` object. This is a basic layout that helps us populate a page with tables, sliders, and graphs, but it's not very interesting.
+
+In a moment, we'll examine alternative layouts for a Shiny app.
+
+Let's look at the basic code inside the fluidPage() object:
+
+    fluidPage(
+
+        # Application title
+        titlePanel("Old Faithful Geyser Data"),
+
+        # Sidebar with a slider input for number of bins 
+        sidebarLayout(
+            sidebarPanel(
+                sliderInput("bins",
+                            "Number of bins:",
+                            min = 1,
+                            max = 50,
+                            value = 30)
+            ),
+
+            # Show a plot of the generated distribution
+            mainPanel(
+               plotOutput("distPlot")
+            )
+        )
+    )
+
+# Layout components
+
+If we reduce the code here, what does the structure look like?
+
+    fluidPage
+     - titlePanel
+     - sidebarLayout
+       - sidebbarPanel
+          - sliderInput
+       - mainPanel
+
+You haven't learned these individual functions, but you can probably guess what they are doing by reading their names.
+
+This code will define the basic layout for the page of our app-- a title, sidebar, and main area.
+
+Let's take a closer look.
+
+# Do: Inspect Page Components
+
+-   `fluidPage()` defines the page.
+
+-   It looks simple, but it's defining all the web technologies that are powering the app
+
+    -   it establishes the HTML, CSS, and Javascript.
+
+-   Open and launch the `min-app.R` file.
+
+-   Open your app in a Browser (if it didn't go to one directly)
+
+-   Seems like a blank page?
+
+-   Open up a web inspector for your Browser
+
+    -   In the Chrome browser, this is under the `View menu > Developer > Developer Tools`.
+
+    -   In the Firefox browser, this is under the `Tools menu > Browser Tools > Web Developer Tools`
+
+-   Web inspectors allow you to "peek under the hood" of a web page and see the actual code that powers the page.
+
+-   In your minimal app skeleton, look at the `<head>` tags of the page. There's a lot inside of there!
+
+    -   Don't worry about the contents of this page. We just want you to have a sense of what Shiny is doing "behind the scenes."
+
+-   Close the web inspector and return to RStudio.
+
+# Other pages
+
+-   `fluidPage()` will be our most common foundation for Shiny apps, but there are a couple of alternatives.
+
+    -   `fixedPage()`has a fixed maximum width, which is good when you don't want your page to reflow as it gets resized.
+
+    -   `fillPage()` fills the height of the browser. This is useful for a "full-screen" layout.
+
+    -   we can see and select some layout samples from the [Shiny layout guide.](https://shiny.rstudio.com/articles/layout-guide.html) We'll go there in a bit.
+
+# Panels
+
+As you can see from our boilerplate code in the panels app (), we can divide the page into zones to place our widgets.
+
+In the boilerplate code, these panels are a `titlePanel`, `sidebarPanel`, and `mainPanel`.
+
+# Do: Updating the panels
+
+Update the `panels1-app` by making these changes.
+
+1.  In the `title`, add a string that says `"My first app"`
+2.  In the `sidebarPanel`, inside the parentheses add this code: `h4("This is in the sidebar")`
+3.  Run the app and see the changes.
+4.  Did it work? Change the contents and reload the app. (`panels2-app.R` shows the results)
+
+# Simple Elements
+
+-   we can populate our panels with some simple UI elements. In the next notebook, we'll learn about many more elements.
+
+-   a `p()` tag creates a paragraph.
+
+-   an `h1(), h2()`, ..., `h6()` tag creates a level 1, 2,...6 header.
+
+-   You can use these to add placeholder text to a basic layout.
+
+```{r eval=FALSE, include=TRUE}
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(),
+    mainPanel(
+      h1("This is a level 1 header"),
+      h2("This is a level 2 header"),
+      h4("This is a level 4 header"),
+      h6("This is a level 6 header. It's actually smaller than a paragraph."),
+      p("This is a paragraph")
+    )
+  )
+)
+```
+
+# Do: Update the panels app
+
+-   Update the `panels2-app` with several header and paragraph components
+
+-   Launch the app to look at the results.
+
+-   Close the app and return here.
+
+# A caution about updating Shiny apps
+
+-   One warning about updating Shiny apps-- it's easy to break the interface or code.
+
+-   Because the app is contained in two sections (ui & server), and because the ui code is often created in nested expressions, we find it somewhat fragile.
+
+    -   It's easy to forget to put a comma between ui elements
+
+    -   Or, it's easy to forget a closing parenthesis.
+
+-   Work carefully! Consider periodically using Save As... to save working copies of your app in order to have a backup.
+
+-   Or, consider using [version control.](https://engineering-shiny.org/version-control.html)
+
+# FluidRows
+
+Sidebar layouts are a standard web design, if maybe a little dated looking nowadays.
+
+We can also load a more flexible system for laying out our components. These are called `fluidRow().`
+
+Inside the fluidRow()s, we can define `column()`s. The spacing of the columns is based on a 12-unit grid, so we divide the row into column segments that will add up to 12.
+
+Web pages are interesting in terms of design. Unlike a poster or a newsletter, web pages can change dimensions, so when we think about designing for these media, we have to think about how the page may stretch or shrink.
+
+In the beginning, it's best to keep your design simple.
+
+# Do: Multirow app
+
+-   Open up the `multirow-app.R` and look at the fluidRow definitions.
+
+-   Run the app.
+
+-   Close the app when you're done
+
+# Tabsets
+
+Another way to breakup a page is through a `tabset`.
+
+A tabset keeps your reader "on one page" without scrolling, but expands the area of the page by providing clickable tabs that can reveal sections as needed.
+
+It's a nice compromise to provide more information in a compact space.
+
+On the other hand, not all of the writing is visible at once. If you design a tabset layout, consider the hierarchy of your information? What's most important?
+
+Or consider your app as a story or journey? You can click through (or ask your reader to click through) tabs in sequence to reveal a narrative.
+
+# Do: Tabset app
+
+-   Open the `tabset-app.`
+
+-   Look at the code
+
+-   Close the app when you're done.
+
+# Navlists and navbars
+
+-   `Navlists` relate to the tabset layout, but provide a list-like selection for your tabs.
+
+-   Because tabs are sized based on their title, you may run out of space if you need a lot of tabs.
+
+-   The navlist provides a vertically-laid out solution that can select the tabsets.
+
+-   In a way, the navlist panel is like a sidebar? But it's a sidebar primarily used for navigation.
+
+-   Another variation is a `navbarMenu`() used with `navbarPage`(). A navbarMenu alows a dropdown menu to stack more components on a page. (not shown here)
+
+# Do: Navlist app
+
+-   Open the `navlist-app`
+
+-   Look at the `navlistPanel()` code
+
+-   Play with the app
+
+-   Close the app when you're done.
+
+# Themes
+
+-   Shiny uses the "**Bootstrap**" Javascript framework to lay out its pages. What's Bootstrap? It's a design template that's been in use for a while; it helps developers rapidly spin up designs for web pages using a collection of HTML conventions, CSS styles, and JS code blocks. It's the "library" that defines the 12-unit column grid in the fluidRows, for example.
+
+-   As a beginner, you don't have to worry too much about Bootstrap. But, if you want to easily customize your Shiny apps, you can find a lot of "Bootstrap-compatible" themes and extensions.
+
+-   You don't have to use Bootstrap. There are also other compatible CSS frameworks, but we won't cover those here. Consult the book for those links.
+
+-   In addition, Shiny defines some theme variations. You can find those [here.](https://rstudio.github.io/shinythemes/)
+
+-   Take a moment to browse the Shiny Themes
+
+# Do: Using a Shiny Theme
+
+-   Look at the `shiny-theme-app`.
+
+-   Do you see where the theme has been implemented?
+
+-   Run the app.
+
+-   Close the app and change the theme to "united"
+
+-   Run the app again and look at it.
+
+-   Close the app when you are done.
+
+# Bootstrap themes and customizer
+
+-   You can also use a larger collection of bootstrap themes and customize a theme, and Shiny provides a tool for this.
+
+-   This is the `bslib` package and `bs_theme()` option.
+
+-   When you interact with the theme customizer, the code to make these theme customizations is copied to the R Console
+
+    -   When you have decided on your theme, you will copy this code into your app
+
+-   As an exercise, you will create a custom theme, including picking colors for various elements.
+
+-   Bookmark [this page](https://shiny.rstudio.com/articles/themes.html) to find out more about customizing themes.
+
+# Do: Customize a theme
+
+-   Launch the `bs-theme-app`.
+-   Note the theme customizer in the upper right.
+-   Pick a different overall bootstrap theme *first*.
+-   Pick some different colors for the buttons and elements. Note how the button colors change.
+-   Note that the changes you make are reflected in the R Console.
+
+# Do: Look at the layout guide
+
+-   Before we move on, take a moment to look at the [Shiny layout guide.](https://shiny.rstudio.com/articles/layout-guide.html)
+
+-   This gives you an idea of some basic page layouts.
+
+-   You can copy and paste this code into your own projects to quickly scaffold an app.
+
+-   In the next exercise, you will pick a layout from the layout guide.
+
+# Conclusion
+
+This should give you a sense of the basics of laying out your app. Of course, you can spend quite a bit of time branding or customizing your Shiny app to your heart's content, and this is a worthwhile use of your time.
+
+With the sample Shiny themes, they work great-- but they are pretty common is usage. They are a great place to start, but for "professional" presentations, you probably do want to budget some time to customize the look and feel of your app.
+
+Layout and themes of course interact with the actual widgets, charts and tables that you use on your page. In order to finalize the layout, you need to understand how it will work (or not work) with your design. We'll look at what we outputs and widgets we can put into a Shiny app next.

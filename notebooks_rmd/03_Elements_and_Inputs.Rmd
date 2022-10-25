@@ -1,0 +1,530 @@
+---
+title: "Elements and Inputs"
+author: "Jemma Nelson, written for BH Analytics, LLC"
+output: 
+  # slidy_presentation:
+  #   highlight: pygments
+  html_document:
+    toc: true
+    toc_float: true
+  # pdf_document:
+  #   keep_tex: yes
+  #   latex_engine: xelatex
+  #   number_sections: yes
+  #   toc: yes
+  #   toc_depth: 1
+
+---
+
+```{r setup, include=TRUE, eval=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Elements and Inputs
+
+Now that we've got an idea of the basics and layouts that can go into a Shiny app, let's examine the widgets that we can put into an app.
+
+In this notebook, we'll cover the HTML elements and Shiny inputs and widgets that you can use to populate a Shiny app.
+
+We'll also look at outputs.
+
+In a future notebook, we'll connect inputs to outputs and talk about reactivity.
+
+# HTML Elements
+
+Shiny allows us to populate an app with the building blocks of a web page, HTML elements.
+
+You don't "need" to know anything about HTML to use these components. However the names are taken from the names of the HTML tags, so the more you understand about how HTML works, the more you'll be able to use Shiny components effectively.
+
+There are 110 tag items that correspond to HTML elements. We won't go through every one, but just try to cover some of the main ones you might want to know about.
+
+```{r echo=TRUE}
+library(shiny)
+
+names(shiny::tags)
+```
+
+# Foundation App
+
+Let's use the basic Shiny app to try out these elements. We will try these tags out in the sidebar layout of the default app. You can find the beginning app in `apps > basic.` After we make all of customizations, we'll save the final app in `apps > inputs.`
+
+# Tags or helper functions
+
+The tags listed above are the complete list of tags that shiny provides. We can call these with the pattern `tags$name_of_tag()`
+
+For instance, a div tag `tags$div()` populates shiny with this HTML code: `<div></div>`.
+
+Shiny also provides helper functions for popular tags. These are: `a`, `br`, `code`, `div`, `em`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `hr`, `img`, `p`, `pre`, `span`, and `strong.`
+
+The `div()` function also creates the set of HTML `<div></div>` tags.
+
+```{r echo=TRUE}
+tags$div()
+div()
+```
+
+# Div tag
+
+The `div` tag defines a **division** or block inside of an HTML document. This is one way that HTML pages are organized.
+
+A div can be just an organizational structure-- a container that contains other elements, but is "invisible," the way you might organize files inside of folders.
+
+Or a div can be explicitly styles with CSS and represent a visible block on a page-- a paragraph, or a block of a grid. It's a flexible structure.
+
+# HTML tags
+
+Most HTML tags are comprised of pairs of opening and closing tags, surrounded by angle brackets (`< … > </ … >` ). The closing tag is usually the same name, but with a slash in front of it, like `<div></div>` .
+
+The contents of the element go in between the tags.
+
+Note: not *all* tags are paired. An `<img>` tag is an example of a common element that doesn't have a closing tag.
+
+# Do: Add a div to the basic app
+
+-   Add a `div()` tag to the `basic-app.R`
+
+-   Put it in the `mainPanel()`, *before* the *plotOutput*.
+
+-   Be sure to add a comma after the div() tag.
+
+-   Inside of the parentheses of the div tag, enter a string in quotes. Something like "This is my first div"
+
+-   Run the app, look at it, then close and stop the app and return.
+
+# Paragraph tag
+
+-   a paragraph tag is a basic building block of a web page
+
+-   it's meant to hold a block of text.
+
+-   we can use the p() function or tags\$p() to create one in Shiny.
+
+    -   Will add the `<p></p>` pair of tags in HTML.
+
+```{r eval=FALSE, include=TRUE}
+# add this to an app
+p("Put some text in here.")
+```
+
+# Do: Add a paragraph to the app
+
+-   or add two or three.
+
+-   Put them in the main panel, after your div. Put some text into them.
+
+    -   When you are "scaffolding" an app, it's common that you don't have your finished text, so it's helpful to put placeholder text to help figure out your layout. You can generate nonsense text called ["lorem ipsum"](https://en.wikipedia.org/wiki/Lorem_ipsum) for this text that will eventually be replaced.
+
+    -   Lorem ipsum is boring-- let's use ["hipster ipsum"](https://hipsum.co/) instead! Here are some paragraphs of hipster ipsum you can use to build your app. Or go to the site and generate some new text. Or find other kinds of "ipsum" generators and make some text!
+
+-   Copy the text (all or part) into paragraphs
+
+-   Run the app and look at the results
+
+-   Stop the app and return when you are done.
+
+> Flexitarian portland everyday carry, heirloom vaporware viral artisan raclette health goth. Pitchfork heirloom you probably haven't heard of them tacos +1 whatever affogato williamsburg listicle vinyl forage paleo pour-over. Copper mug taxidermy cloud bread, fingerstache actually 90's tattooed succulents bitters hoodie austin banh mi vegan ugh. Actually put a bird on it cronut poutine chartreuse tofu, irony chambray dreamcatcher street art. Hoodie williamsburg pitchfork bicycle rights mixtape, fanny pack tumblr everyday carry whatever. Single-origin coffee cardigan viral skateboard fashion axe.
+>
+> Palo santo marfa quinoa artisan glossier crucifix cloud bread YOLO fashion axe organic umami godard. Art party af helvetica la croix sustainable ennui vegan thundercats raw denim. Blue bottle subway tile sartorial slow-carb normcore chambray air plant crucifix raclette forage listicle chia. Squid hell of raclette pitchfork craft beer +1 thundercats swag celiac plaid copper mug subway tile put a bird on it selfies. Wolf kickstarter hammock next level, kogi mixtape vape man braid direct trade lumbersexual williamsburg chambray adaptogen.
+>
+> Lomo pok pok direct trade photo booth roof party kitsch, brunch fanny pack. +1 bitters chartreuse kickstarter, glossier craft beer PBR&B copper mug health goth twee. Leggings vaporware vice, slow-carb readymade hammock hella meggings umami wayfarers sartorial. Blog leggings cardigan biodiesel glossier everyday carry small batch succulents.
+
+# Example
+
+     mainPanel(
+              div("This is my first div"),
+              p("Flexitarian portland everyday carry, heirloom vaporware viral artisan raclette health goth. Pitchfork heirloom you probably haven't heard of them tacos +1 whatever affogato williamsburg listicle vinyl forage paleo pour-over. Copper mug taxidermy cloud bread, fingerstache actually 90's tattooed succulents bitters hoodie austin banh mi vegan ugh. Actually put a bird on it cronut poutine chartreuse tofu, irony chambray dreamcatcher street art. Hoodie williamsburg pitchfork bicycle rights mixtape, fanny pack tumblr everyday carry whatever. Single-origin coffee cardigan viral skateboard fashion axe."),
+              ...
+              )
+
+# Styled text
+
+What if we want to style some of the text within a paragraph? Maybe we want some **boldface**, or some *italics*, or [something else]{.ul}?
+
+We can use some functions such as `strong()` , `em(),` or `code()`for some styles.
+
+In a paragraph tag, you can list the styled components like so:
+
+```{r echo=TRUE}
+p('This would be an example of ',strong('strong'), 'language.')
+```
+
+# Do: Add styled text to your app
+
+-   Add a short paragraph with styled text.
+
+-   Make one word or phrase "strong", one with "em"phasis, and one with "code" styling.
+
+-   Inspect your results and then return.
+
+# Styled text example
+
+    p('This is ',strong('strong'), ' or ', em('emphasis'), ' or ', code('a code example.')),
+
+# Markdown text
+
+That works...ok.
+
+We feel it's pretty cumbersome to add styling to text in that way. It's probably ok for short snippets, but we certainly wouldn't want to edit anything of even moderate length in this way.
+
+In general, you're probably not going to be writing long paragraphs into a Shiny app. It's a presentation format, so you will want to be concise!
+
+But-- there's a better way!
+
+Shiny allows us to insert blocks of markdown formatted text using the `markdown()` function.
+
+-   You can use all of your (basic) markdown tags.
+
+-   Line breaks will be respected.
+
+-   If you're not familiar with markdown tags, pull up the `Markdown Quick Reference` in RStudio (under the **`Help`** menu)
+
+    -   Or print out the markdown cheat sheet
+
+# Markdown example
+
+    markdown("
+        # Markdown Example
+
+        This is a markdown paragraph, and will be contained within a `<p>` tag
+        in the UI.
+
+        The following is an unordered list, which will be represented in the UI as
+        a `<ul>` with `<li>` children:
+
+        * a bullet
+        * another
+
+        [Links](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a) work;
+        so does *emphasis*.
+
+        To see more of what's possible, check out [commonmark.org/help](https://commonmark.org/help).
+        ")
+
+# Do: Enter Markdown into your app
+
+-   Delete all of your divs and paragraphs.
+
+-   Try to reproduce something like this text inside the main body of your app (from [Charles Darwin's *Voyage of the Beagle*](https://www.gutenberg.org/files/944/944-0.txt))
+
+    -   The idea is to try to use a level 2 header, a level 3 header, emphasis, italics, and bulleted and numbered lists (and a link, if you are ambitious!)
+    -   see the results in the `md-app.R`file
+
+    > Copy and format the text below into an app:
+
+    ## Chapter I
+
+    ### St. Jago-- Cape de Verd Islands
+
+    AFTER having been twice driven back by *heavy* southwestern gales, Her Majesty's ship **Beagle**, a ten-gun brig, under the command of Captain Fitz Roy, R. N., sailed from Devonport on the 27th of December, 1831.
+
+-   The object of the expedition was to complete the survey of Patagonia and Tierra del Fuego, commenced under Captain King in 1826 to 1830,--to survey the shores of Chile, Peru, and of some islands in the Pacific--and to carry a chain of chronometrical measurements round the World.
+
+-   On the 6th of January we reached [Teneriffe](https://en.wikipedia.org/wiki/Tenerife), but were prevented landing, by fears of our bringing the cholera: the next morning we saw the sun rise behind the rugged outline of the Grand Canary island, and suddenly illuminate the Peak of Teneriffe, whilst the lower parts were veiled in fleecy clouds.
+
+1.  This was the first of many delightful days never to be forgotten.
+2.  On the 16th of January, 1832, we anchored at Porto Praya, in St. Jago, the chief island of the Cape de Verd archipelago.
+
+# HTML Tag Attributes
+
+There are many more html elements to explore: anchors and headers and images.
+
+But we do want to note another aspect of the Shiny-HTML interface... providing attributes to HTML tags.
+
+Two important attributes are ids and classes. These are important attributes to link elements on your page to CSS selectors.
+
+-   **ids** are unique per page. Using an id, you can select and target a single element
+
+-   **classes** allow you to select groups of elements. Using a class, you can select all paragraphs, or alternating paragraphs, or a group of images.
+
+```{r eval=FALSE, include=TRUE}
+div(id = 'anImportantDiv', class='fancyDiv', "This has both an id and a class")
+```
+
+# Some HTML Elements
+
+We'll talk about inputs in a moment, but here are some other notable HTML tags that might be of use to you.
+
+-   `a()` anchor elements provide links in your app. An anchor Element points to a web address using an href attribute.
+
+    -   a(href = '<https://www.gutenberg.org/files/944/944-0.txt>', 'The Voyage of the Beagle')
+
+-   `br()` elements are line breaks. They don't have a closing tag in HTML; they have a slightly different format with a trailing slash as `<br/>`
+
+-   `img()` elements provide image via the HTML img tag. When we look at outputs we'll also see how to use an `imageOutput` object which provides more flexibility. Use the img() element for simple, hard-coded images.
+
+    -   like line breaks, images only have an open tag (no closing tag)
+
+    -   image elements reference their files with a `src=''` attribute.
+
+    -   the `width=` and `height=` attributes provide sizing, typically in terms of pixels
+
+    -   it can be difficult to locate local image sources with the img tag. They need to go within a folder called `www` within your app.
+
+    -   `img( src='images/my-image.jpg', height='30', width='30')`
+
+# Do: Add an anchor and line break to your app.
+
+-   try adding a line break, and anchor to your app
+
+-   Look at the results
+
+-   Close and return here when you've finished with your app.
+
+# Inputs
+
+So far we've covered several *HTML elements* that can go on your page. These are the building blocks of your app.
+
+But there's more! What makes a Shiny app so useful are the widgets that allow you to change aspects of your app. These are what make your app **dynamic**.
+
+**Inputs** are going to be familiar from your experience of using web pages. These are things like menus, checkboxes, and text fields. We'll look at each type in turn.
+
+We'll examine **outputs** in another notebook, and then we'll see how to link inputs to outputs with **reactivity**.
+
+For now, we'll examine the inputs, and we can test them, but they won't do much until we get everything working together.
+
+# List of Widgets
+
+This is the list of basic Shiny inputs:
+
+| **function**         | **widget**                                     |
+|:---------------------|:-----------------------------------------------|
+| `actionButton`       | Action Button                                  |
+| `checkboxGroupInput` | A group of check boxes                         |
+| `checkboxInput`      | A single check box                             |
+| `dateInput`          | A calendar to aid date selection               |
+| `dateRangeInput`     | A pair of calendars for selecting a date range |
+| `fileInput`          | A file upload control wizard                   |
+| `helpText`           | Help text that can be added to an input form   |
+| `numericInput`       | A field to enter numbers                       |
+| `radioButtons`       | A set of radio buttons                         |
+| `selectInput`        | A box with choices to select from              |
+| `sliderInput`        | A slider bar                                   |
+| `submitButton`       | A submit button                                |
+| `textInput`          | A field to enter text                          |
+
+# InputID
+
+With all inputs, you **must** provide an **inputId**. Shiny needs to know to which element you will direct output once you connect inputs to outputs.
+
+You also generally need to give the input a **label**.
+
+# Slider
+
+-   the slider input provides a slider widget over a range of numbers
+
+-   you specify the `min`, `max`, and `step` values (if you want a stepped slider)
+
+-   you must provide a starting **value** and a **label** for the widget.
+
+-   you can round values in the slider with the `round=`argument
+
+-   you can *animate* sliders. This provides a play button that can automatically move through the values.
+
+-   you can adjust `animationOptions()` like the speed and looping, but we won't cover those here.
+
+    ```{r eval=FALSE, include=TRUE}
+    sliderInput( inputId="my-slider",
+                           label='A range of values',
+                           min = 0,
+                           max = 100,
+                           value = 0,
+                           step = 5,
+                           animate = TRUE)
+    ```
+
+# Radio Button
+
+-   `radioButtons` allow the user to select one (and only one) option from a list of options
+
+-   we must supply an `inputId` and a `label`
+
+-   we provide the `choices` as a list of options of labels and values
+
+-   we can optionally designate an initial `selected` value
+
+-   `inline` makes the choices display horizontally (if there's space)
+
+```{r eval=FALSE, include=TRUE}
+radioButtons("iceCream",label="Favorite Flavor",
+             choices = c("None"="none",
+                         "Vanilla" = "van",
+                         "Chocolate" = "choc",
+                         "Mango" = "mango",
+                         "Pistachio" = "pist",
+                         "Vegan Creme Soda" = "vegan"),
+             selected="vegan",
+             inline=T)
+```
+
+# Checkbox
+
+-   `CheckboxGroupInput` allows a user to select *one* choice or *multiple* choices.
+
+-   `inputId` and `label` are required
+
+-   `selected` provides an initial value, `choices` provide the list of options
+
+    ```{r eval=FALSE, include=TRUE}
+    checkboxGroupInput("cbox","My favorite R colors:",
+                       choices = c("Burlywood"='burlywood',
+                                   "Peachpuff3"='peachpuff3',
+                                   "Lavenderblush4"='lavenderblush4',
+                                   "Honeydew2"='honeydew2'),
+                       selected=c('burlywood','honeydew2'))
+    ```
+
+# Do: Input Practice
+
+-   Try adding a slider, radio button, and checkbox group to the basic app. Add these into the "sliderPanel" part of the app (where there is already a slider).
+
+-   Test your inputs, and then return here.
+
+# Text Input
+
+-   Let's continue looking at some other useful inputs.
+
+-   The text input allows a user to input free text.
+
+-   `InputId` and `label` are required.
+
+-   We can specify the width of the textbox in pixels or as a percentage.
+
+```{r eval=FALSE, include=TRUE}
+textInput("thoughts",label="How is your day going?", value="great!", width="150px")
+```
+
+# Select Input
+
+-   there are 2 choices to make a "select menu" in Shiny. The default is to use a javascript library called "selectize." This is a little fancier than your standard HTML select element.
+
+-   you can either use s`electInput()`or `selectizeInput()`to invoke this dropdown
+
+-   as always, we must provide an `inputId` and `label`. We also must provide `choices`.
+
+-   the menu can slow down a lot if you provide a menu with thousands of choices. Think about if you must do that.
+
+-   You can allow mutliple selections with the `multiple` flag set to `TRUE`
+
+```{r eval=FALSE, include=TRUE}
+selectizeInput("my-menu","For a mixed bouquet of flowers, I prefer...",
+               choices=c("Roses"='roses',
+                         "Iris"='iris',
+                         "Gladioli"='gladioli',
+                         "Peonies"='peonies'),
+               multiple=TRUE)
+```
+
+# Date Input
+
+-   the dateInput and dateRangeInput are useful for filtering data
+
+-   use these to provide a calendar widget from which to pick dates, or date ranges.
+
+-   you can select different languages for the month and day names.
+
+-   you can provide a format string to control how the date displays
+
+```{r eval=FALSE, include=TRUE}
+dateRangeInput("vacation","My vacation will be ",
+               start="2022-01-01",end="2023-12-31",
+               format="%b %d %y", startview="month",
+               language="fr")
+```
+
+# File Input
+
+-   our sidebar is getting crowded (if you are adding things like we are, and not replacing)!
+
+-   let's look at a just a few more useful inputs.
+
+-   a `fileInput` allows a user to upload a file.
+
+-   this could enable a really cool provide-your-own data analysis
+
+-   `inputId` and `label` are required
+
+-   `multiple` allows multiple files at once. This may not work on older browsers!
+
+-   `accept` provides a list of suffixes that can be accepted (extension or MIME type)
+
+-   width and buttonLabel provide some styling options.
+
+```{r eval=FALSE, include=TRUE}
+fileInput("my-csvs","uploaded-csvs",multiple=F,accept=c('.csv','.rds'),
+          width="200px",buttonLabel = "upload!",
+          placeholder="upload csv or rds")
+```
+
+# Button
+
+-   an actionButton() can be freely scripted to do things.
+
+-   its utility will become more apparent once we get into outputs and reactivity. For now, just look at the widget.
+
+-   `inputId` and `label` are required
+
+-   you can provide an `icon` (an image)
+
+-   you can set the `width` in pixels or percent.
+
+-   recall you can also control its style with your theme or CSS
+
+```{r eval=FALSE, include=TRUE}
+actionButton("do-it","Smash!",width="90%")
+```
+
+# Var Select Input
+
+-   specific to R, we can provide an input widget to select variables from a data frame.
+
+-   try this in an area with more space. In our example, we'll put in the mainPanel.
+
+-   otherwise, it's like a menu. But it's pulling the choices from the names of the data frame.
+
+    ```{r eval=FALSE, include=TRUE}
+    varSelectInput("my-vars",
+                   "Choose your variables for analysis", 
+                   data=mtcars,
+                   multiple=T,
+                   width="85%")
+    ```
+
+# Do: Add some more inputs
+
+-   Take some time and add more of these inputs to your app. Come back when you've tried them all out (or your instructor will give you a time)
+-   See examples in the `inputs2-app.R` file.
+
+# More inputs!
+
+-   there are even more inputs available, but we will let you investigate those later.
+
+    -   there are a number of interesting inputs available around tabs-- inserting, removing, showing and hiding tabs. With these, you can make a dynamic interface!
+
+-   Hopefully this gives you a good idea of the range of building blocks you have for Shiny apps.
+
+-   You can extend Shiny with custom widgets, including custom inputs!
+
+-   You can see a [gallery of Shiny widgets here.](https://shiny.rstudio.com/gallery/widget-gallery.html)
+
+-   You can also find 3rd party widgets, like the ["`shinyWidgets`" package!](http://shinyapps.dreamrs.fr/shinyWidgets/)
+
+# Reflecting an input in an output
+
+-   we can see the change in an input if we add an output.
+
+-   For now, we'll just add a textOutput. We put this in the UI.
+
+-   Then in the server logic, we will connect the input to an output. Now when a value changes, we should see the value in the output. We'll connect more outputs in the next chapter.
+
+```{r eval=FALSE}
+# ui
+textInput("thoughts",label="How is your day going?", value="great!", width="150px")
+textOutput("text1")
+
+# server
+output$text1 <- renderText({input$thoughts})
+```
+
+# Conclusion
+
+That's it! We've covered a lot. In the exercise, you'll build out your app with several of these tags and inputs. Then we'll learn about outputs, and see how to connect everything up!
